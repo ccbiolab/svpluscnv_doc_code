@@ -1,28 +1,28 @@
 library(svpluscnv)
 
-setwd("<path to folder>/svpluscnv_doc_code/")
+setwd("<path-to-local-folder>/svpluscnv_doc_code/")
 
 # data:
 # CCLE BREAST data contains CNVs derived from SNP arrays and SVs derived from WGS
 # download from DepMap (https://depmap.org/portal/download/)
-load("~/Box Sync/git/svpluscnv_doc_code/data/brca_ccle.rda",verbose=TRUE)
+load("data/brca_ccle.rda",verbose=TRUE)
 
 # data:
 # TCGA Breast-AdenoCA data contains CNVs and SVs derived from WGS
 # download from PCAWG (https://dcc.icgc.org/releases/PCAWG)
-load("~/Box Sync/git/svpluscnv_doc_code/data/brca_tcga.rda",verbose=TRUE)
+load("data/brca_tcga.rda",verbose=TRUE)
 
 # data:
 # PCAWG all tumor types data contains CNVs and SVs derived from WGS
 # download from GDC legacy portal (https://portal.gdc.cancer.gov/legacy-archive/
-load("~/Box Sync/git/svpluscnv_doc_code/data/pcawg.rda",verbose=TRUE)
+load("data/pcawg.rda",verbose=TRUE)
 brca_samples_pcawg <- names(which(ali2hist == "Breast-AdenoCA"))
 cnv_brca_pcawg <- cnv_pcawg; cnv_brca_pcawg@data <- cnv_brca_pcawg@data[which(cnv_brca_pcawg@data$sample %in% brca_samples_pcawg)]
 svc_brca_pcawg <- svc_pcawg; svc_brca_pcawg@data <- svc_brca_pcawg@data[which(svc_brca_pcawg@data$sample %in% brca_samples_pcawg)]
 
 
 # Figure Suppl 1
-pdf("figures/suppl_fig_S1.pdf",height=6,width=6)
+pdf("figures/suppl_fig_S1.pdf",height=5,width=6)
 par(mfrow=c(3,1),mar=c(3,4,1,4))
 cnv.freq(cnv_brca_ccle,fc.pct = 0.3, ploidy = TRUE)
 cnv.freq(cnv_brca_tcga,fc.pct = 0.3, ploidy = TRUE)
@@ -32,7 +32,7 @@ dev.off()
 #Figure Suppl 2
 
 # load a list of canc er genes 
-load("~/Box Sync/git/svpluscnv_doc_code/data/cosmic_census_v90.rda",verbose=TRUE)
+load("data/cosmic_census_v90.rda",verbose=TRUE)
 
 cnv.break.annot(cnv_brca_ccle,)
 svc.break.annot(svc_brca_ccle)
@@ -118,18 +118,16 @@ dev.off()
 
 
 
-#### Figure SUPPL S3?
+#### Figure SUPPL S3
 
 cnv_breaks_ccle <- cnv.breaks(cnv_brca_ccle)
 svc_breaks_ccle <- svc.breaks(svc_brca_ccle)
-pdf("figures/suppl_fig_S3.pdf",height=6,width=6)
+pdf("figures/suppl_fig_S3.pdf",height=5,width=6)
 par(mar=c(5,5,2,2))
-match.breaks(cnv_breaks_ccle,svc_breaks_ccle)
+match.breaks(cnv_breaks_ccle,svc_breaks_ccle, maxgap = 10000)
 dev.off()
 
-#### Figure Suppl S3: SHATTERED.TREGIONS
-
-
+#### Figure Suppl S4: SHATTERED.TREGIONS
 
 
 shreg_ccle <- shattered.regions(cnv_brca_ccle,svc_brca_ccle,fc.pct = 0.1, interleaved.cut = 0.33, verbose=FALSE)
@@ -140,24 +138,29 @@ shreg_pcawg <- shattered.regions(cnv_brca_pcawg,svc_brca_pcawg,fc.pct = 0.1, int
 set.seed=1234
 
 pdf("figures/suppl_fig_S4.pdf",height=6,width=8)
-par(mar=c(3,4,1,1))
 
 layout(matrix(c(1,2,3,4,5,6),3,2,
               byrow = TRUE),widths = c(2,5))
+par(mar=c(3,4,1,1))
 fpt_ccle <- freq.p.test(shreg_ccle@high.density.regions.hc)
+par(mar=c(3,4,3,4))
 shattered.map.plot(shreg_ccle,freq.cut = fpt_ccle@freq.cut)
 text(4e8,fpt_ccle@freq.cut+0.5,"fdr < 0.05",cex=1.1)
 
+par(mar=c(3,4,1,1))
 fpt_tcga <- freq.p.test(shreg_tcga@high.density.regions.hc)
+par(mar=c(3,4,3,4))
 shattered.map.plot(shreg_tcga,freq.cut = fpt_tcga@freq.cut)
 text(4e8,fpt_tcga@freq.cut+0.6,"fdr < 0.05",cex=1.1)
 
+par(mar=c(3,4,1,1))
 fpt_pcawg <- freq.p.test(shreg_pcawg@high.density.regions.hc)
+par(mar=c(3,4,3,4))
 shattered.map.plot(shreg_pcawg,freq.cut = fpt_pcawg@freq.cut)
 text(4e8,fpt_pcawg@freq.cut+1,"fdr < 0.05",cex=1.1)
 
 dev.off()
-    
+
 
 ### FIGURE 1
 
@@ -181,9 +184,6 @@ shattered.map.plot(shreg_ccle,freq.cut = fpt_ccle@freq.cut)
 text(4e8,fpt_ccle@freq.cut+1,"fdr < 0.05",cex=1.1)
 dev.off()
 
-              
-
-
 
 ### Evaluation of performance of shattered.regions against PCAWG chromothripsis survey
 
@@ -192,7 +192,7 @@ dev.off()
 # download from manuscript (https://doi.org/10.1038/s41588-019-0576-7) based on ShatterSeek algorithm (https://github.com/parklab/ShatterSeek)
 # suppl table 1 (https://static-content.springer.com/esm/art%3A10.1038%2Fs41588-019-0576-7/MediaObjects/41588_2019_576_MOESM3_ESM.xlsx)
 
-load("~/Box Sync/git/svpluscnv_doc_code/data/pcawg_chromo.rda",verbose=TRUE)
+load("data/pcawg_chromo.rda",verbose=TRUE)
 SSeek_results <- pcawg_chromo[which(pcawg_chromo$chromo_label %in% c("High confidence","Low confidence") ),]
 
 
